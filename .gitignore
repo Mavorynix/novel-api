@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Uploads (keep folder structure)
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Testing
+coverage/
