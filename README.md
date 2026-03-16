@@ -1,18 +1,18 @@
 # Novel API
 
-REST API untuk platform novel online dengan fitur lengkap.
+REST API for an online novel platform with complete features.
 
-## Fitur
+## Features
 
-- 🔐 **Autentikasi JWT** - Access token & refresh token
+- 🔐 **JWT Authentication** - Access token & refresh token
 - 👥 **Role-Based Access Control** - Admin & User
-- 📚 **Novel Management** - CRUD dengan upload sampul
-- 📖 **Chapter Management** - CRUD dengan penomoran otomatis
+- 📚 **Novel Management** - CRUD with cover upload
+- 📖 **Chapter Management** - CRUD with auto-numbering
 - 🏷️ **Genre Management** - Admin only
-- 🔖 **Bookmark** - Simpan novel favorit
-- 💬 **Komentar** - Komentar per chapter
-- ⭐ **Rating** - Rating 1-5 dengan rata-rata otomatis
-- 📜 **Riwayat Baca** - Otomatis tercatat saat login
+- 🔖 **Bookmarks** - Save favorite novels
+- 💬 **Comments** - Comment per chapter
+- ⭐ **Ratings** - 1-5 rating with auto-calculated average
+- 📜 **Reading History** - Auto-recorded when logged in
 - 📄 **Pagination, Sorting, Filtering**
 - 📖 **Swagger Documentation**
 
@@ -25,13 +25,13 @@ REST API untuk platform novel online dengan fitur lengkap.
 - **Validation**: Zod
 - **Docs**: Swagger/OpenAPI
 
-## Instalasi
+## Installation
 
 ### Prerequisites
 
 - Node.js 18+
 - PostgreSQL
-- Bun atau npm
+- Bun or npm
 
 ### Setup
 
@@ -44,49 +44,49 @@ cd novel-api
 2. Install dependencies
 ```bash
 bun install
-# atau
+# or
 npm install
 ```
 
 3. Setup environment variables
 ```bash
 cp .env.example .env
-# Edit .env sesuai konfigurasi database Anda
+# Edit .env according to your database configuration
 ```
 
 4. Setup database
 ```bash
 bun run db:push
-# atau untuk development dengan migration
+# or for development with migration
 bun run db:migrate
 ```
 
-5. (Opsional) Seed data awal
+5. (Optional) Seed initial data
 ```bash
 bun run db:seed
 ```
 
-6. Jalankan server
+6. Start server
 ```bash
 bun run dev
 ```
 
-Server berjalan di `http://localhost:3000`
+Server runs at `http://localhost:3000`
 
 ## API Endpoints
 
 ### Auth
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
-| POST | `/api/auth/register` | Register user baru | ❌ |
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/auth/register` | Register new user | ❌ |
 | POST | `/api/auth/login` | Login | ❌ |
 | POST | `/api/auth/refresh` | Refresh token | ❌ |
 | POST | `/api/auth/logout` | Logout | ❌ |
 | GET | `/api/auth/me` | Get current user | ✅ |
 
 ### Novels
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/novels` | List novels (pagination, filter, search) | ❌ |
 | GET | `/api/novels/popular` | Popular novels | ❌ |
 | GET | `/api/novels/latest` | Latest novels | ❌ |
@@ -97,8 +97,8 @@ Server berjalan di `http://localhost:3000`
 | DELETE | `/api/novels/:id` | Delete novel | ✅ (Owner/Admin) |
 
 ### Chapters
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/chapters/novel/:novelId` | List chapters | ❌ |
 | GET | `/api/chapters/:id` | Get chapter with content | ❌ |
 | POST | `/api/chapters/novel/:novelId` | Create chapter | ✅ (Owner/Admin) |
@@ -106,8 +106,8 @@ Server berjalan di `http://localhost:3000`
 | DELETE | `/api/chapters/:id` | Delete chapter | ✅ (Owner/Admin) |
 
 ### Genres
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/genres` | List genres | ❌ |
 | GET | `/api/genres/:id` | Get genre | ❌ |
 | POST | `/api/genres` | Create genre | ✅ Admin |
@@ -115,15 +115,15 @@ Server berjalan di `http://localhost:3000`
 | DELETE | `/api/genres/:id` | Delete genre | ✅ Admin |
 
 ### Bookmarks
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/bookmarks` | User's bookmarks | ✅ |
 | POST | `/api/bookmarks/:novelId` | Add bookmark | ✅ |
 | DELETE | `/api/bookmarks/:novelId` | Remove bookmark | ✅ |
 
 ### Comments
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/comments/chapter/:chapterId` | Chapter comments | ❌ |
 | GET | `/api/comments/my` | User's comments | ✅ |
 | POST | `/api/comments/chapter/:chapterId` | Add comment | ✅ |
@@ -131,16 +131,16 @@ Server berjalan di `http://localhost:3000`
 | DELETE | `/api/comments/:id` | Delete comment | ✅ (Owner/Admin) |
 
 ### Ratings
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/ratings/:novelId` | Novel ratings & stats | ❌ |
 | GET | `/api/ratings/:novelId/me` | User's rating | ✅ |
 | POST | `/api/ratings/:novelId` | Rate novel | ✅ |
 | DELETE | `/api/ratings/:novelId` | Remove rating | ✅ |
 
 ### Reading History
-| Method | Endpoint | Deskripsi | Auth |
-|--------|----------|-----------|------|
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
 | GET | `/api/history` | User's reading history | ✅ |
 | DELETE | `/api/history` | Clear all history | ✅ |
 | DELETE | `/api/history/:id` | Delete history entry | ✅ |
