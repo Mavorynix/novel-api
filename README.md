@@ -352,6 +352,4 @@ novel-api/
 
 MIT License - see [LICENSE](LICENSE) file.
 
----
 
-Made with ❤️ by [manggaladev](https://github.com/manggaladev)
