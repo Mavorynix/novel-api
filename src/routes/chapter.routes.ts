@@ -6,6 +6,7 @@ import {
   createChapter,
   updateChapter,
   deleteChapter,
+  getScheduledChapters,
 } from '../controllers/chapter.controller';
 import { validate } from '../middleware/validate.middleware';
 import { auth, optionalAuth } from '../middleware/auth.middleware';
@@ -27,6 +28,7 @@ const router = Router();
  */
 
 // Public routes
+router.get('/scheduled', auth, getScheduledChapters);
 router.get('/novel/:novelId', validate(chapterQuerySchema), getChapters);
 router.get('/:id', validate(chapterIdSchema), optionalAuth, getChapterById);
 router.get('/novel/:novelId/:chapterNum', validate(chapterByNovelSchema), optionalAuth, getChapterByNumber);

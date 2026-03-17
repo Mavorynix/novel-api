@@ -8,7 +8,9 @@ import {
   deleteNovel,
   getPopularNovels,
   getLatestNovels,
+  getTrendingNovels,
 } from '../controllers/novel.controller';
+import { getSimilarNovels } from '../controllers/recommendation.controller';
 import { validate } from '../middleware/validate.middleware';
 import { auth, optionalAuth } from '../middleware/auth.middleware';
 import { isAdmin } from '../middleware/auth.middleware';
@@ -32,9 +34,11 @@ const router = Router();
 
 // Public routes
 router.get('/', validate(novelQuerySchema), getNovels);
+router.get('/trending', getTrendingNovels);
 router.get('/popular', getPopularNovels);
 router.get('/latest', getLatestNovels);
 router.get('/slug/:slug', validate(novelSlugSchema), getNovelBySlug);
+router.get('/:id/similar', validate(novelIdSchema), getSimilarNovels);
 router.get('/:id', validate(novelIdSchema), optionalAuth, getNovelById);
 
 // Protected routes (require auth)

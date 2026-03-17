@@ -28,6 +28,9 @@ import followRoutes from './routes/follow.routes';
 import readingListRoutes from './routes/readingList.routes';
 import notificationRoutes from './routes/notification.routes';
 import adminRoutes from './routes/admin.routes';
+import progressRoutes from './routes/progress.routes';
+import recommendationRoutes from './routes/recommendation.routes';
+import reportRoutes from './routes/report.routes';
 
 import { errorHandler, notFound } from './middleware/error.middleware';
 import { swaggerSpec } from './config/swagger';
@@ -127,7 +130,7 @@ app.get('/api-docs.json', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: '📚 Novel API is running!',
-    version: '2.0.0',
+    version: '3.0.0',
     documentation: '/api-docs',
     websocket: '/socket.io',
     endpoints: {
@@ -145,6 +148,9 @@ app.get('/', (req, res) => {
       readingLists: '/api/reading-lists',
       notifications: '/api/notifications',
       admin: '/api/admin',
+      progress: '/api/progress',
+      recommendations: '/api/recommendations',
+      reports: '/api/reports',
     },
   });
 });
@@ -174,6 +180,9 @@ app.use('/api/follows', followRoutes);
 app.use('/api/reading-lists', readingListRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/reports', reportRoutes);
 
 // 404 Handler
 app.use(notFound);

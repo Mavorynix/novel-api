@@ -4,6 +4,68 @@ import { buildPaginationMeta, countWords, sanitizeString, sanitizeHtmlContent } 
 
 /**
  * @swagger
+ * /api/chapters/scheduled:
+ *   get:
+ *     summary: Get scheduled chapters (author/admin only)
+ *     tags: [Chapters]
+ *     security:
+ *       - bearerAuth: []
+ */
+export const getScheduledChapters: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ success: false, error: 'Authentication required' });
+      return;
+    }
+
+    const { page = 1, limit = 20 } = req.query as any;
+    const skip = (page - 1) * limit;
+
+    // Build where clause - admins see all, authors see their own
+    const where: any = {
+      isScheduled: true,
+      publishedAt: { gt: new Date() },
+    };
+
+    if (req.user.role !== 'ADMIN') {
+      where.novel = { authorId: req.user.id };
+    }
+
+    const [chapters, total] = await Promise.all([
+      prisma.chapter.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { publishedAt: 'asc' },
+        include: {
+          novel: {
+            select: {
+              id: true,
+              title: true,
+              author: {
+                select: { id: true, username: true },
+              },
+            },
+          },
+        },
+      }),
+      prisma.chapter.count({ where }),
+    ]);
+
+    const pagination = buildPaginationMeta(total, page, limit);
+
+    res.json({
+      success: true,
+      data: chapters,
+      pagination,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @swagger
  * /api/novels/{novelId}/chapters:
  *   get:
  *     summary: Get all chapters of a novel
@@ -32,7 +94,16 @@ export const getChapters: RequestHandler = async (req: Request, res: Response, n
 
     const [chapters, total] = await Promise.all([
       prisma.chapter.findMany({
-        where: { novelId },
+        where: { 
+          novelId,
+          // Hide scheduled chapters from regular users
+          ...(req.user?.role !== 'ADMIN' && novel.authorId !== req.user?.id ? {
+            OR: [
+              { isScheduled: false },
+              { publishedAt: { lte: new Date() } },
+            ],
+          } : {}),
+        },
         skip,
         take: limit,
         orderBy: { [sort as string]: order },
@@ -43,6 +114,7 @@ export const getChapters: RequestHandler = async (req: Request, res: Response, n
           viewsCount: true,
           wordCount: true,
           publishedAt: true,
+          isScheduled: true,
           // Don't include content in list for performance
         },
       }),
@@ -244,7 +316,7 @@ export const createChapter: RequestHandler = async (req: Request, res: Response,
     }
 
     const { novelId } = req.params;
-    const { title, chapterNum, content } = req.body;
+    const { title, chapterNum, content, publishedAt, isScheduled } = req.body;
 
     // Check novel exists and user owns it
     const novel = await prisma.novel.findUnique({
@@ -280,6 +352,10 @@ export const createChapter: RequestHandler = async (req: Request, res: Response,
       return;
     }
 
+    // Handle scheduled publishing
+    const scheduleDate = publishedAt ? new Date(publishedAt) : null;
+    const shouldSchedule = isScheduled && scheduleDate && scheduleDate > new Date();
+
     // Create chapter
     const chapter = await prisma.chapter.create({
       data: {
@@ -288,18 +364,22 @@ export const createChapter: RequestHandler = async (req: Request, res: Response,
         content: sanitizeHtmlContent(content),
         novelId,
         wordCount: countWords(content),
+        publishedAt: shouldSchedule ? scheduleDate : new Date(),
+        isScheduled: shouldSchedule,
       },
     });
 
-    // Update novel total chapters
-    await prisma.novel.update({
-      where: { id: novelId },
-      data: { totalChapters: { increment: 1 } },
-    });
+    // Update novel total chapters only if not scheduled
+    if (!shouldSchedule) {
+      await prisma.novel.update({
+        where: { id: novelId },
+        data: { totalChapters: { increment: 1 } },
+      });
+    }
 
     res.status(201).json({
       success: true,
-      message: 'Chapter created successfully',
+      message: shouldSchedule ? 'Chapter scheduled successfully' : 'Chapter created successfully',
       data: chapter,
     });
   } catch (error) {

@@ -37,11 +37,13 @@ model User {
   commentLikes     CommentLike[]
   ratings          Rating[]
   readingHistories ReadingHistory[]
+  readingProgress  ReadingProgress[]
   refreshTokens    RefreshToken[]
   notifications    Notification[]
   followers        Follow[]      @relation("UserFollowers")
   following        Follow[]      @relation("UserFollowing")
   readingLists     ReadingList[]
+  reports          Report[]
 
   @@map("users")
 }
@@ -125,51 +127,58 @@ model Novel {
   totalWords      Int         @default(0)
   viewsCount      Int         @default(0)
   bookmarkCount   Int         @default(0)
+  trendingScore   Float       @default(0)
   authorId        String
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
   // Relations
-  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  chapters     Chapter[]
-  genres       NovelGenre[]
-  bookmarks    Bookmark[]
-  ratings      Rating[]
-  readingLists ReadingListNovel[]
+  author          User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  chapters        Chapter[]
+  genres          NovelGenre[]
+  bookmarks       Bookmark[]
+  ratings         Rating[]
+  readingLists    ReadingListNovel[]
+  readingProgress ReadingProgress[]
+  reports         Report[]
 
   @@index([authorId])
   @@index([status])
   @@index([publishedAt])
   @@index([viewsCount])
+  @@index([trendingScore])
   @@map("novels")
 }
 
 // ==================== CHAPTER ====================
 
 model Chapter {
-  id          String   @id @default(uuid())
-  title       String
-  chapterNum  Int
-  content     String   @db.Text
-  novelId     String
-  viewsCount  Int      @default(0)
-  wordCount   Int      @default(0)
-  likesCount  Int      @default(0)
-  commentsCount Int    @default(0)
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String    @id @default(uuid())
+  title         String
+  chapterNum    Int
+  content       String    @db.Text
+  novelId       String
+  viewsCount    Int       @default(0)
+  wordCount     Int       @default(0)
+  likesCount    Int       @default(0)
+  commentsCount Int       @default(0)
+  publishedAt   DateTime?
+  isScheduled   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations
   novel            Novel             @relation(fields: [novelId], references: [id], onDelete: Cascade)
   comments         Comment[]
   commentLikes     CommentLike[]
   readingHistories ReadingHistory[]
+  readingProgress  ReadingProgress[]
 
   @@unique([novelId, chapterNum])
   @@index([novelId])
   @@index([publishedAt])
   @@index([viewsCount])
+  @@index([isScheduled])
   @@map("chapters")
 }
 
@@ -311,6 +320,68 @@ model ReadingListNovel {
   @@id([readingListId, novelId])
   @@index([readingListId])
   @@map("reading_list_novels")
+}
+
+// ==================== READING PROGRESS ====================
+
+model ReadingProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  novelId     String
+  chapterId   String
+  progress    Float    @default(0) // Percentage of chapter read (0-100)
+  lastReadAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  novel   Novel   @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, novelId])
+  @@index([userId])
+  @@index([novelId])
+  @@index([lastReadAt])
+  @@map("reading_progress")
+}
+
+// ==================== REPORTS ====================
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportType {
+  NOVEL
+  CHAPTER
+  COMMENT
+  USER
+}
+
+model Report {
+  id          String       @id @default(uuid())
+  reporterId  String
+  type        ReportType
+  targetId    String
+  reason      String       @db.Text
+  description String?      @db.Text
+  status      ReportStatus @default(PENDING)
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  novel    Novel?  @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([reporterId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("reports")
 }
 
 // ==================== ADMIN STATS ====================

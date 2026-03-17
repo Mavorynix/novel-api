@@ -9,6 +9,93 @@ import {
 import { NovelStatus } from '@prisma/client';
 
 /**
+ * Calculate trending score for a novel
+ * Based on: views, ratings, bookmarks, recent activity
+ */
+export const calculateTrendingScore = async (novelId: string): Promise<number> => {
+  const novel = await prisma.novel.findUnique({
+    where: { id: novelId },
+    include: {
+      _count: {
+        select: { bookmarks: true, ratings: true },
+      },
+      ratings: {
+        select: { score: true },
+      },
+    },
+  });
+
+  if (!novel) return 0;
+
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  // Get recent views (last 7 days)
+  const recentChapters = await prisma.chapter.aggregate({
+    where: {
+      novelId,
+      createdAt: { gte: weekAgo },
+    },
+    _sum: { viewsCount: true },
+  });
+
+  // Calculate trending score
+  const viewScore = (novel.viewsCount / 1000) * 0.3;
+  const ratingScore = novel.averageRating * 10 * 0.25;
+  const bookmarkScore = novel._count.bookmarks * 0.2;
+  const activityScore = (recentChapters._sum.viewsCount || 0) / 100 * 0.15;
+  const recencyScore = novel.updatedAt > weekAgo ? 5 : 0;
+
+  return Math.round((viewScore + ratingScore + bookmarkScore + activityScore + recencyScore) * 100) / 100;
+};
+
+/**
+ * @swagger
+ * /api/novels/trending:
+ *   get:
+ *     summary: Get trending novels (based on views, ratings, recent activity)
+ *     tags: [Novels]
+ */
+export const getTrendingNovels: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { limit = 10, page = 1 } = req.query as any;
+    const skip = (page - 1) * limit;
+
+    const novels = await prisma.novel.findMany({
+      where: {// Only include published novels
+        publishedAt: { not: null },
+      },
+      skip,
+      take: limit,
+      orderBy: [
+        { trendingScore: 'desc' },
+        { viewsCount: 'desc' },
+      ],
+      include: {
+        author: {
+          select: { id: true, username: true, avatar: true },
+        },
+        genres: {
+          include: {
+            genre: { select: { id: true, name: true, slug: true } },
+          },
+        },
+        _count: {
+          select: { chapters: true, bookmarks: true, ratings: true },
+        },
+      },
+    });
+
+    res.json({
+      success: true,
+      data: novels,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @swagger
  * /api/novels:
  *   get:
@@ -29,7 +116,7 @@ import { NovelStatus } from '@prisma/client';
  *         name: sort
  *         schema:
  *           type: string
- *           enum: [createdAt, title, averageRating, viewsCount, totalChapters]
+ *           enum: [createdAt, title, averageRating, viewsCount, totalChapters, trendingScore]
  *           default: createdAt
  *       - in: query
  *         name: order

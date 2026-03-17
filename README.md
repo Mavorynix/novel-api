@@ -15,7 +15,7 @@ A comprehensive REST API for a novel platform built with Node.js, Express, TypeS
 - 🔐 **JWT Authentication** - Access token & refresh token
 - 👥 **Role-Based Access Control** - Admin, Author, User roles
 - 📚 **Novel Management** - CRUD with cover upload
-- 📖 **Chapter Management** - CRUD with auto-numbering
+- 📖 **Chapter Management** - CRUD with auto-numbering & scheduled publishing
 - 🏷️ **Genre Management** - Admin only
 
 ### User Interactions
@@ -26,6 +26,17 @@ A comprehensive REST API for a novel platform built with Node.js, Express, TypeS
 - 📜 **Reading History** - Auto-recorded when logged in
 - 👥 **Follow System** - Follow your favorite authors
 - 📋 **Reading Lists** - Create custom reading collections
+- 📊 **Reading Progress** - Track reading position across novels
+
+### Discovery & Recommendations
+- 📈 **Trending Novels** - Based on views, ratings, and recent activity
+- 🎯 **Personalized Recommendations** - Based on reading history and preferences
+- 🔗 **Similar Novels** - Find novels with matching genres/authors
+
+### Content Management
+- 📅 **Scheduled Publishing** - Schedule chapters for future release
+- 🚨 **Report System** - Report inappropriate content
+- 🔍 **Content Moderation** - Admin tools for managing reports
 
 ### Real-time Features
 - 🔔 **WebSocket Notifications** - Real-time updates
@@ -35,6 +46,7 @@ A comprehensive REST API for a novel platform built with Node.js, Express, TypeS
 - 📊 **Dashboard Statistics** - Platform overview
 - 👤 **User Management** - Role management
 - 📝 **Content Moderation** - Manage all content
+- 📋 **Report Management** - Review and resolve reports
 
 ### Technical Features
 - 📄 **Pagination, Sorting, Filtering**
@@ -120,9 +132,11 @@ Server runs at `http://localhost:3000`
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | GET | `/api/novels` | List novels (pagination, filter, search) | ❌ |
+| GET | `/api/novels/trending` | Trending novels | ❌ |
 | GET | `/api/novels/popular` | Popular novels | ❌ |
 | GET | `/api/novels/latest` | Latest novels | ❌ |
 | GET | `/api/novels/:id` | Get novel by ID | ❌ |
+| GET | `/api/novels/:id/similar` | Get similar novels | ❌ |
 | GET | `/api/novels/slug/:slug` | Get novel by slug | ❌ |
 | POST | `/api/novels` | Create novel | ✅ |
 | PUT | `/api/novels/:id` | Update novel | ✅ (Owner/Admin) |
@@ -131,6 +145,7 @@ Server runs at `http://localhost:3000`
 ### Chapters
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
+| GET | `/api/chapters/scheduled` | Get scheduled chapters | ✅ (Author/Admin) |
 | GET | `/api/chapters/novel/:novelId` | List chapters | ❌ |
 | GET | `/api/chapters/:id` | Get chapter with content | ❌ |
 | POST | `/api/chapters/novel/:novelId` | Create chapter | ✅ (Owner/Admin) |
@@ -220,6 +235,26 @@ Server runs at `http://localhost:3000`
 | PUT | `/api/admin/users/:id/role` | Update user role | ✅ Admin |
 | GET | `/api/admin/novels` | List all novels | ✅ Admin |
 | GET | `/api/admin/activity` | Admin activity log | ✅ Admin |
+
+### Reading Progress
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/progress/recent` | Get recently read novels | ✅ |
+| GET | `/api/progress/:novelId` | Get reading progress for novel | ✅ |
+| PUT | `/api/progress/:novelId/:chapterId` | Update reading progress | ✅ |
+
+### Recommendations
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/recommendations` | Get personalized recommendations | ✅ |
+
+### Reports
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/reports` | Report content | ✅ |
+| GET | `/api/reports` | Get all reports | ✅ Admin |
+| GET | `/api/reports/:id` | Get report details | ✅ Admin |
+| PUT | `/api/reports/:id/resolve` | Resolve report | ✅ Admin |
 
 ## 🔌 WebSocket Events
 
@@ -323,6 +358,22 @@ novel-api/
 | **ADMIN** | All operations, user management, all novels |
 | **AUTHOR** | Create novels, manage own novels & chapters |
 | **USER** | Read novels, add bookmarks, comments, ratings |
+
+## 🆕 What's New in v3.0.0
+
+### New Features
+- 📊 **Reading Progress Tracking** - Save and resume reading position
+- 🎯 **Personalized Recommendations** - Based on reading history and genre preferences
+- 🔗 **Similar Novels** - Discover novels with matching genres/authors
+- 📈 **Trending Novels** - Dynamic trending score based on views, ratings, and activity
+- 📅 **Scheduled Publishing** - Schedule chapters for future release
+- 🚨 **Report System** - Report inappropriate content (novels, chapters, comments, users)
+- 🔍 **Admin Moderation Tools** - Review and resolve reports
+
+### Improvements
+- Enhanced chapter model with `isScheduled` and nullable `publishedAt`
+- Added `trendingScore` to novels for better discovery
+- Improved content filtering for scheduled chapters
 
 ## 🆕 What's New in v2.0.0
 
