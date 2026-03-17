@@ -359,33 +359,6 @@ novel-api/
 | **AUTHOR** | Create novels, manage own novels & chapters |
 | **USER** | Read novels, add bookmarks, comments, ratings |
 
-## 🆕 What's New in v3.0.0
-
-### New Features
-- 📊 **Reading Progress Tracking** - Save and resume reading position
-- 🎯 **Personalized Recommendations** - Based on reading history and genre preferences
-- 🔗 **Similar Novels** - Discover novels with matching genres/authors
-- 📈 **Trending Novels** - Dynamic trending score based on views, ratings, and activity
-- 📅 **Scheduled Publishing** - Schedule chapters for future release
-- 🚨 **Report System** - Report inappropriate content (novels, chapters, comments, users)
-- 🔍 **Admin Moderation Tools** - Review and resolve reports
-
-### Improvements
-- Enhanced chapter model with `isScheduled` and nullable `publishedAt`
-- Added `trendingScore` to novels for better discovery
-- Improved content filtering for scheduled chapters
-
-## 🆕 What's New in v2.0.0
-
-- 👥 **Follow System** - Follow your favorite authors
-- 💬 **Nested Comments** - Reply to comments with threading
-- ❤️ **Comment Likes** - Like/unlike comments
-- 📋 **Reading Lists** - Create custom collections
-- 🔔 **WebSocket Notifications** - Real-time updates
-- 📊 **Admin Dashboard** - Statistics and management
-- 📝 **Request Logging** - Morgan HTTP logging
-- 🛠️ **Updated Dependencies** - Latest versions
-
 ## 📝 Scripts
 
 | Command | Description |
