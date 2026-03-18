@@ -82,7 +82,7 @@ export const followUser = async (
         type: 'follow',
         title: 'New Follower',
         message: `${req.user.username} started following you`,
-        data: { followerId },
+        data: JSON.stringify({ followerId }),
       },
     });
 

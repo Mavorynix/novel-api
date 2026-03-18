@@ -220,12 +220,12 @@ export const resolveReport: RequestHandler = async (req: Request, res: Response,
       data: {
         action: `REPORT_${status}`,
         userId: req.user.id,
-        details: {
+        details: JSON.stringify({
           reportId: id,
           targetType: report.type,
           targetId: report.targetId,
           action,
-        },
+        }),
       },
     });
 

@@ -194,7 +194,7 @@ export const addComment: RequestHandler = async (req: Request, res: Response, ne
             type: 'comment',
             title: 'New Reply',
             message: `${req.user.username} replied to your comment`,
-            data: { chapterId, commentId: comment.id },
+            data: JSON.stringify({ chapterId, commentId: comment.id }),
           },
         });
 
@@ -426,7 +426,7 @@ export const likeComment: RequestHandler = async (req: Request, res: Response, n
           type: 'like',
           title: 'New Like',
           message: `${req.user.username} liked your comment`,
-          data: { commentId: id },
+          data: JSON.stringify({ commentId: id }),
         },
       });
 
