@@ -1,114 +1,128 @@
+<div align="center">
+
 # 📚 Novel API
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=nodedotjs)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/Express-4.x-black?style=flat-square&logo=express)](https://expressjs.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://typescriptlang.org)
-[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?style=flat-square&logo=prisma)](https://prisma.io)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+**A comprehensive REST API for novel platform with authentication, RBAC, chapters, bookmarks, ratings, comments, and more**
 
-A comprehensive REST API for a novel platform built with Node.js, Express, TypeScript, and Prisma ORM.
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Express](https://img.shields.io/badge/Express-4.x-black?style=for-the-badge&logo=express)](https://expressjs.com)
+[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## ✨ Features
+</div>
 
-### Core Features
-- 🔐 **JWT Authentication** - Access token & refresh token
-- 👥 **Role-Based Access Control** - Admin, Author, User roles
-- 📚 **Novel Management** - CRUD with cover upload
-- 📖 **Chapter Management** - CRUD with auto-numbering & scheduled publishing
-- 🏷️ **Genre Management** - Admin only
+---
+
+## 🎯 Features
+
+### 🔐 Authentication & Authorization
+- JWT Access & Refresh Tokens
+- Role-Based Access Control (Admin, Author, User)
+- Email Verification
+- Password Management
+
+### 📚 Content Management
+- **Novels** - CRUD with cover upload, genres, tags
+- **Chapters** - CRUD with auto-numbering, scheduled publishing
+- **Genres** - Admin-only management
+- **Comments** - Nested comments with threading
+
+### 💡 Social Features
 - 🔖 **Bookmarks** - Save favorite novels
-- ⭐ **Ratings** - 1-5 rating with auto-calculated average
-- 📜 **Reading History** - Auto-recorded
-- 💬 **Nested Comments** - Reply to comments with threading
-- ❤️ **Comment Likes** - Like/unlike comments
-- 👥 **Follow System** - Follow your favorite authors
+- ⭐ **Ratings** - 1-5 star ratings
+- ❤️ **Likes** - Like comments
+- 👥 **Follows** - Follow authors
+- 🔔 **Notifications** - Real-time via WebSocket
 
-### Technical Features
-- 📁 **File Upload** - Cover images with Multer
-- 🔍 **Search & Filter** - Full-text search, genre filter
-- 📄 **Pagination** - Cursor and offset based
-- 🛡️ **Security** - Helmet, CORS, Rate limiting
+### 🛠️ Technical
+- RESTful API design
+- Rate limiting
+- File uploads
+- Swagger documentation
 
-## 🛠️ Tech Stack
-
-- **Runtime**: Node.js 18+
-- **Framework**: Express 4.x
-- **Language**: TypeScript
-- **ORM**: Prisma
-- **Database**: PostgreSQL / SQLite
-- **Auth**: JWT (jsonwebtoken)
-- **Validation**: Zod
-
-## 📦 Installation
-
-### Local Development
+## 🚀 Quick Start
 
 ```bash
-# Clone the repository
+# Clone
 git clone https://github.com/manggaladev/novel-api.git
 cd novel-api
 
-# Install dependencies
+# Install
 bun install
 
-# Copy environment file
-cp .env.example .env
-
 # Setup database
-bun run db:generate
 bun run db:push
 
-# Start development server
+# Run
 bun run dev
 ```
 
-### Docker
-
-```bash
-docker-compose up -d
-```
-
-## 🚀 Usage
-
-### API Endpoints
+## 📖 API Documentation
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/refresh` | Refresh token |
-| GET | `/api/novels` | List novels |
-| POST | `/api/novels` | Create novel (author) |
-| GET | `/api/novels/:id` | Get novel details |
-| GET | `/api/novels/:id/chapters` | Get novel chapters |
-| POST | `/api/novels/:id/ratings` | Rate novel |
+| `POST` | `/api/auth/register` | Register user |
+| `POST` | `/api/auth/login` | Login |
+| `GET` | `/api/novels` | List novels |
+| `POST` | `/api/novels` | Create novel (author) |
+| `GET` | `/api/novels/:id` | Get novel |
+| `GET` | `/api/novels/:id/chapters` | Get chapters |
+| `POST` | `/api/novels/:id/ratings` | Rate novel |
 
-### API Documentation
+Swagger UI available at `/api-docs`
 
-Full API documentation available at `/api/docs` when running the server.
-
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
 novel-api/
 ├── src/
-│   ├── index.ts          # Entry point
-│   ├── app.ts            # Express app
-│   ├── routes/           # API routes
-│   ├── controllers/      # Request handlers
-│   ├── services/         # Business logic
-│   ├── middlewares/      # Express middlewares
-│   ├── validators/       # Zod schemas
-│   └── utils/            # Utilities
+│   ├── routes/          # API routes
+│   ├── controllers/     # Request handlers
+│   ├── services/        # Business logic
+│   ├── middlewares/     # Auth, validation
+│   ├── utils/           # Helpers
+│   └── config/          # Configuration
 ├── prisma/
-│   └── schema.prisma     # Database schema
-├── uploads/              # Uploaded files
-├── package.json
-├── tsconfig.json
-└── README.md
+│   └── schema.prisma    # Database schema
+└── uploads/             # File uploads
 ```
+
+## 🔧 Environment Variables
+
+```env
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-secret-key"
+JWT_REFRESH_SECRET="your-refresh-secret"
+PORT=3000
+```
+
+## 🗄️ Database
+
+Supports both **SQLite** (development) and **PostgreSQL** (production).
+
+```bash
+# SQLite (default)
+bun run db:push
+
+# PostgreSQL
+DATABASE_URL="postgresql://..." bun run db:push
+```
+
+## 🤝 Contributing
+
+Contributions welcome! See our [Contributing Guide](CONTRIBUTING.md).
 
 ## 📄 License
 
 [MIT License](LICENSE)
 
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-novel-api)**
+
+Made with ❤️ by [manggaladev](https://github.com/manggaladev)
+
+</div>
