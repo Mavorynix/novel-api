@@ -45,7 +45,6 @@
 
 ```bash
 # Clone
-git clone https://github.com/manggaladev/novel-api.git
 cd novel-api
 
 # Install
@@ -123,6 +122,5 @@ Contributions welcome! See our [Contributing Guide](CONTRIBUTING.md).
 
 **[⬆ Back to Top](#-novel-api)**
 
-Made with ❤️ by [manggaladev](https://github.com/manggaladev)
 
 </div>
